@@ -16,27 +16,21 @@ void Player::processInput() {
 
 	vector<string> vs = Tools::split(input, ' ');
 
-	cout << vs.size() << endl;
-
-	for (int i = 0; i < vs.size() - 1; i++) {
-		cout << vs.at(i) << endl;
-	}
-
 	switch(vs.size()) {
 		case 2:
-			cout << vs.at(0) + " " + vs.at(1);
+			cout << vs.at(0) + " " + vs.at(1) << endl;
 			break;
 		case 1:
-			cout << "game over!!!";
+			cout << "game over!!!" << endl;
 			break;
 		case 5:
-			cout << "0 1"; // first move
+			cout << "0 1" << endl; // first move
 			break;
 		case 4: //player1: aa player2: bb
 			//TODO combine this information with game information to decide who is the first player
 			break;
 		default:
-			cout << "not what I want";
+			cout << "not what I want" << endl;
 			break;
 	}
 }

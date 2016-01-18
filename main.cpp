@@ -12,7 +12,7 @@
 
 int main(int argc, const char * argv[]) {
     Player *p = new Player();
-    cout << p->getName();
+    cout << p->getName() << endl;
     while(true) {
         p->processInput();
     }

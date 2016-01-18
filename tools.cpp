@@ -9,7 +9,6 @@ vector<string> Tools::split(const string &str, char delimiter) {
     vector<string> internal;
     stringstream ss(str);
     string tok;
-    cout << str << endl;
     while(getline(ss, tok, delimiter)) {
         internal.push_back(tok);
     }
