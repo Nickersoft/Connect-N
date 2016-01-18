@@ -6,9 +6,6 @@ connect-n: main.o board.o
 main.o: main.cpp main.h
 	g++ -Wall -c main.cpp
 
-board.o: board.cpp board.h
-	g++ -Wall -c board.cpp
-
 clean:
 	rm -f *.o ./Connect-N
 
