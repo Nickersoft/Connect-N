@@ -11,4 +11,9 @@
 #include "main.h"
 
 int main(int argc, const char * argv[]) {
+    Player *p = new Player();
+    cout << p->getName();
+    while(true) {
+        p->processInput();
+    }
 }
