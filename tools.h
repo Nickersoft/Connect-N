@@ -9,6 +9,9 @@ using namespace std;
 
 namespace Tools {
     vector<string> split(const string&, char);
+
+    void println();
+    void println(string);
 };
 
 #endif

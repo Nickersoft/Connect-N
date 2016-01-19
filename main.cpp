@@ -9,6 +9,7 @@
 #include <iostream>
 
 #include "main.h"
+#include "board.h"
 
 int main(int argc, const char * argv[]) {
     Player *p = new Player();

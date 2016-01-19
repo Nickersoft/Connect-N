@@ -14,3 +14,11 @@ vector<string> Tools::split(const string &str, char delimiter) {
     }
     return internal;
 }
+
+void Tools::println() {
+    cout << endl;
+}
+
+void Tools::println(string t) {
+    cout << t << endl;
+}
