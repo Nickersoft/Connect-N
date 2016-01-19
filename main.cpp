@@ -17,4 +17,12 @@ int main(int argc, const char * argv[]) {
     while(true) {
         p->processInput();
     }
+    // srand(time(0));
+    // for (int i = 0; i < 100; i++)
+    //     std::cout << rand() % 2;
+    // Board* b1 = new Board(6, 7, 4);
+    // Board* b2 = b1;
+    // b1->printBoard();
+    // b2->dropADiscFromTop(1, 1);
+    // b2->printBoard();
 }

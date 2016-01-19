@@ -9,12 +9,15 @@
 #include <string>
 
 #include "tools.h"
+#include "node.h"
 
 using namespace std;
 
 class Player {
-    string name;
-	bool first_move;
+    bool    first_move;
+    int     time_limit;
+    Node    *gpTree;
+    string  name;
 
 public:
     Player();

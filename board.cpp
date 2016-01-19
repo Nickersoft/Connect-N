@@ -11,9 +11,21 @@ vector< vector<int> > resize_board(vector< vector<int> > board, int new_width, i
     return board;
 }
 
+int Board::get(int x, int y) {
+	return board.at(x).at(y);
+}
+
+void Board::set(int row, int col, int new_value) {
+	board.at(row).at(col) = new_value;
+}
+
 /********************
    PUBLIC FUNCTIONS
 *********************/
+
+Board::Board(const Board &rhs) {
+    this->board = rhs.board;
+}
 
 Board::Board(int height, int width, int N) {
 
@@ -40,20 +52,12 @@ Board::Board(int height, int width, int N) {
 	this->N = N;
  }
 
- int Board::getHeight() {
+int Board::getHeight() {
  	return height;
  }
 
 int Board::getWidth() {
 	return width;
-}
-
-int Board::get(int x, int y) {
-	return board.at(x).at(y);
-}
-
-void Board::set(int x, int y, int new_value) {
-	board.at(x).at(y) = new_value;
 }
 
 void Board::printBoard() {
