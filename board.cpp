@@ -4,27 +4,31 @@
    PRIVATE FUNCTIONS
 **********************/
 
-vector< vector<int> > resize_board(vector< vector<int> > board, int new_width, int new_height) {
-    board.resize(new_height);
+vector< vector<int> > resize_layout(vector< vector<int> > layout, int new_height, int new_width) {
+    layout.resize(new_height);
     for (int i = 0; i < new_height; ++i)
-        board[i].resize(new_width);
-    return board;
+        layout[i].resize(new_width);
+    return layout;
 }
 
 int Board::get(int x, int y) {
-	return board.at(x).at(y);
+	return layout.at(x).at(y);
 }
 
 void Board::set(int row, int col, int new_value) {
-	board.at(row).at(col) = new_value;
+	layout.at(row).at(col) = new_value;
 }
 
 /********************
    PUBLIC FUNCTIONS
 *********************/
 
-Board::Board(const Board &rhs) {
-    this->board = rhs.board;
+Board::Board(const Board &obj) {
+    this->width = obj.width;
+    this->height = obj.height;
+    this->N = obj.N;
+    this->layout = obj.layout;
+    this->numOfDiscsInColumn = obj.numOfDiscsInColumn;
 }
 
 Board::Board(int height, int width, int N) {
@@ -37,45 +41,37 @@ Board::Board(int height, int width, int N) {
 
 	this->width  = width;
 	this->height = height;
-	board = resize_board(board, width, height);
+    this->layout = resize_layout(layout, height, width);
 
 	for(int i = 0; i < height; i++) {
 		for(int j=0; j < width; j++){
-			board[i][j] = this->emptyCell;
+			set(i, j, this->emptyCell);
 		}
     }
 
-	numOfDiscsInColumn.resize(this->width);
+	numOfDiscsInColumn.resize(width);
 
 //		for(int j=0;j<width;j++)
 //			numOfDiscsInColumn[j]=0;
 	this->N = N;
  }
 
-int Board::getHeight() {
- 	return height;
- }
-
-int Board::getWidth() {
-	return width;
-}
-
 void Board::printBoard() {
 	println("Board: ");
 	for(int i = 0; i < height; i++) {
 		for(int j = 0; j < width; j++) {
-			printf("%d ", this->get(i, j));
+			printf("%d ", get(i, j));
 		}
 		println();
 	}
 }
 
 bool Board::canRemoveADiscFromBottom(int col, int currentPlayer) {
-	if (col < 0 || col >= this->width) {
+	if (col < 0 || col >= width) {
 		println("Illegal column!");
 		return false;
 	}
-	else if (board[height-1][col] != currentPlayer) {
+	else if (layout[height-1][col] != currentPlayer) {
 		printf("You don't have a checker in column %d to pop out!\n", col);
 		return false;
 	}
@@ -86,19 +82,19 @@ bool Board::canRemoveADiscFromBottom(int col, int currentPlayer) {
 
 void Board::removeADiscFromBottom(int col) {
 	int i;
-	for(i = height - 1; i > height - this->numOfDiscsInColumn.at(col); i--) {
-		this->set(i, col, this->get(i-1, col));
+	for(i = height - 1; i > height - numOfDiscsInColumn.at(col); i--) {
+		set(i, col, get(i-1, col));
 	}
-	this->set(i, col, emptyCell);
+	set(i, col, emptyCell);
 	numOfDiscsInColumn.at(col) -= 1;
 }
 
 bool Board::canDropADiscFromTop(int col, int currentPlayer) {
-	if(col < 0 || col >= this->width) {
+	if(col < 0 || col >= width) {
 		println("Illegal column!");
 		return false;
 	}
-	else if(this->numOfDiscsInColumn.at(col) == this->height) {
+	else if(numOfDiscsInColumn.at(col) == height) {
 		println("Column is already full. Cannot drop more disc in it.");
 		return false;
 	}
@@ -108,9 +104,9 @@ bool Board::canDropADiscFromTop(int col, int currentPlayer) {
 }
 
 void Board::dropADiscFromTop(int col, int currentplayer) {
-	int firstEmptyCellRow = height - this->numOfDiscsInColumn.at(col) - 1;
-	this->set(firstEmptyCellRow, col, currentplayer);
-	this->numOfDiscsInColumn.at(col) += 1;
+	int firstEmptyCellRow = height - numOfDiscsInColumn.at(col) - 1;
+	set(firstEmptyCellRow, col, currentplayer);
+	numOfDiscsInColumn.at(col) += 1;
 }
 
 /**
@@ -122,22 +118,22 @@ void Board::dropADiscFromTop(int col, int currentplayer) {
 int Board::isConnectN(){
 	int tmp_winner = checkHorizontally();
 
-	if(tmp_winner != this->NOCONNECTION)
+	if(tmp_winner != NOCONNECTION)
 		return tmp_winner;
 
 	tmp_winner = checkVertically();
-	if(tmp_winner != this->NOCONNECTION)
+	if(tmp_winner != NOCONNECTION)
 		return tmp_winner;
 
 	tmp_winner = checkDiagonally1();
-	if(tmp_winner != this->NOCONNECTION)
+	if(tmp_winner != NOCONNECTION)
 		return tmp_winner;
 
 	tmp_winner = checkDiagonally2();
-	if(tmp_winner != this->NOCONNECTION)
+	if(tmp_winner != NOCONNECTION)
 		return tmp_winner;
 
-	return this->NOCONNECTION;
+	return NOCONNECTION;
 }
 
 int Board::checkHorizontally() {
@@ -147,17 +143,17 @@ int Board::checkHorizontally() {
 	bool player2_win = false;
 
 	//check each row, horizontally
-	for(int i = 0; i < this->getHeight(); i++) {
+	for(int i = 0; i < this->height; i++) {
 		max1 = 0;
 		max2 = 0;
-		for(int j = 0;j < this->getWidth(); j++) {
-			if(this->get(i, j) == PLAYER1){
+		for(int j = 0;j < this->width; j++) {
+			if(get(i, j) == PLAYER1){
 				max1++;
 				max2 = 0;
 				if(max1 == N)
 					player1_win = true;
 			}
-			else if(this->get(i, j) == PLAYER2){
+			else if(get(i, j) == PLAYER2){
 				max1 = 0;
 				max2++;
 				if(max2 == N)
@@ -187,17 +183,17 @@ int Board::checkVertically(){
 	bool player1_win = false;
 	bool player2_win = false;
 
-	for(int j=0; j < this->getWidth(); j++) {
+	for(int j=0; j < this->width; j++) {
 		max1 = 0;
 		max2 = 0;
-		for(int i = 0; i < this->getHeight(); i++) {
-			if(this->get(i, j) == PLAYER1) {
+		for(int i = 0; i < this->height; i++) {
+			if(get(i, j) == PLAYER1) {
 				max1++;
 				max2 = 0;
 				if(max1 == N)
 					player1_win = true;
 			}
-			else if(this->get(i, j) == PLAYER2) {
+			else if(get(i, j) == PLAYER2) {
 				max1 = 0;
 				max2++;
 				if(max2 == N)
@@ -239,13 +235,13 @@ int Board::checkDiagonally1() {
 
 		while(x >= 0  && y < height){
 			// System.out.println("k: "+k+", x: "+x+", y: "+y);
-			if(this->get(height - 1 - y, x) == PLAYER1) {
+			if(get(height - 1 - y, x) == PLAYER1) {
 				max1++;
 				max2 = 0;
 				if(max1 == N)
 					player1_win = true;
 			}
-			else if(this->get(height - 1 - y, x) == PLAYER2) {
+			else if(get(height - 1 - y, x) == PLAYER2) {
 				max1 = 0;
 				max2++;
 				if(max2 == N)
@@ -290,13 +286,13 @@ int Board::checkDiagonally2() {
 		y = x-k;
 		while(x >= 0 && x < width && y < height) {
 			// System.out.println("k: "+k+", x: "+x+", y: "+y);
-			if(this->get(height - 1 - y, x) == PLAYER1) {
+			if(get(height - 1 - y, x) == PLAYER1) {
 				max1++;
 				max2 = 0;
 				if(max1 == N)
 					player1_win = true;
 			}
-			else if(this->get(height - 1 - y, x) == PLAYER2) {
+			else if(get(height - 1 - y, x) == PLAYER2) {
 				max1 = 0;
 				max2++;
 				if(max2 == N)
@@ -325,7 +321,7 @@ int Board::checkDiagonally2() {
 bool Board::isFull() {
 	for(int i = 0; i < height; i++)
 		for(int j = 0; j < width; j++) {
-			if(this->get(i, j) == this->emptyCell)
+			if(get(i, j) == this->emptyCell)
 				return false;
 		}
 	return true;
@@ -336,7 +332,7 @@ void Board::setBoard(int row, int col, int player) {
 		println("The row or column number is out of bound!");
 	if(player != PLAYER1 && player != PLAYER2)
 		println("Wrong player!");
-	this->set(row, col, player);
+	set(row, col, player);
 }
 
 

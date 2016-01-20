@@ -11,6 +11,10 @@ using namespace Tools;
 class Board {
 
 private:
+    int     get(int, int);
+    void    set(int, int, int);
+
+public:
     int width,
         height,
         N,
@@ -20,18 +24,11 @@ private:
         NOCONNECTION,
         TIE;
 
-        int     get(int, int);
-        void    set(int, int, int);
-
-public:
-        vector< vector<int> >   board;
+        vector< vector<int> >   layout;
         vector<int>             numOfDiscsInColumn;
 
-        Board(const Board&);
         Board(int, int, int);
-
-        int     getWidth();
-        int     getHeight();
+        Board(const Board&);
 
         bool    canDropADiscFromTop(int, int);
         bool    canRemoveADiscFromBottom(int, int);
