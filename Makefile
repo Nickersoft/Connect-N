@@ -19,7 +19,10 @@ tools.o: tools.cpp tools.h
 	g++ -g -Wall -c tools.cpp
 
 run_sample:
-	java -jar Referee.jar "./Connect-N" "./Connect-N" 6 7 3 10 10
+	make clean && make
+	rm -f ./referee/*.class
+	cd ./referee && javac Referee.java Board.java
+	java referee.Referee "./Connect-N" "./Connect-N" 6 7 3 10 10
 
 clean:
 	rm -f *.o ./Connect-N

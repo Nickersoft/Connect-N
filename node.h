@@ -1,27 +1,46 @@
 #ifndef __NODE_INCLUDED__
 #define __NODE_INCLUDED__
 
-#include <vector>
+#include <algorithm>
 #include <string>
+#include <vector>
 
-#include "tools.h"
+class Player;
+class Board;
+
 #include "board.h"
+#include "player.h"
+#include "tools.h"
 
+using namespace Tools;
 using namespace std;
 
 class Node {
-    Board *board;
-    vector<Node> nodes;
+
+private:
+    Board           *board;
+    int             depthLimit;
+    string          name;
+    vector<Node*>   nodes;
+    Node*           parent;
+    Player          *player;
+    Player          *maximizingPlayer;
 
 public:
     Node();
-    Node(int, int, int);
+    Node(Board*, Player*, Player*, int);
+    Node(Board*, Player*, Node*);
+    Node(const Node&);
 
-    void    addNode(Node);
-    int     count();
-    void    generateNodes();
-    int     minimax();
-    void    setNodes(vector<Node>);
+    void            addNode(Node*);
+    void            clearNodes();
+    int             count();
+    void            generateNodes();
+    Board*          getBoard();
+    vector<Node*>   getNodes();
+    int             heuristic(Node*);
+    int             minimax(int);
+    void            setNodes(vector<Node*>);
 };
 
 #endif

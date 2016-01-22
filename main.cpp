@@ -11,8 +11,11 @@
 
 #include "board.h"
 #include "player.h"
+#include "tools.h"
 
 int main(int argc, const char * argv[]) {
+    remove("debug.log");
+
     Player *p = new Player();
     cout << p->getName() << endl;
     while(true) {
