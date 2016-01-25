@@ -43,5 +43,6 @@ To use the original, untampered version of the referee (which plays the computer
 
 	make clean && make
 	java -jar ./referee/Referee.jar "./Connect-N" "./Connect-N" 6 7 3 10 10	
+## Debugging
 
-
+The source directory comes with a nifty Tools class, which can be used for debugging purposes. Two noticeable functions are `log()` and `error()`, which write to `debug.log` and `error.log`, respectively. Both functions can also take in an extra integer parameter (in addition to a string), which will format the string using the integer provided (like printf). 
