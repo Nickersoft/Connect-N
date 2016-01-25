@@ -83,3 +83,4 @@ $RECYCLE.BIN/
 Connect-N
 debug.log
 error.log
+*.class
