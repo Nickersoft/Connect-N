@@ -1,19 +1,12 @@
 #ifndef __TOOLS_INCLUDED__
 #define __TOOLS_INCLUDED__
 
-#define emptyCell 9
-#define MAXDEPTH 2
-#define PLAYER1 1
-#define PLAYER2 2
-#define NOCONNECTION -1
-#define TIE 0
-#define DROP 1
-#define POPOUT 0
-
+#include <cstdarg>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string>
 #include <vector>
 
@@ -25,9 +18,11 @@ namespace Tools {
     void            error(string, int);
     string          itos(int);
     void            log(string);
+    void            log(string, int);
     void            println();
     void            println(string);
     vector<string>  split(const string&, char);
+    int             rand_from_range(int, int);
 };
 
 #endif

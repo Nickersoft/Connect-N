@@ -3,11 +3,17 @@
 using namespace std;
 
 void Tools::error(string s) {
-    cerr << s << endl;
+    ofstream ofs;
+    ofs.open ("error.log", ios::app);
+    ofs << time(NULL) << ": " << s << endl;
+    ofs.close();
 }
 
 void Tools::error(string format, int number) {
-    fprintf(stderr, format.c_str(), number);
+    FILE * pFile;
+    pFile = fopen ("error.log", "a+");
+    fprintf(pFile, ("%d: " + format).c_str(), (int)time(NULL), number);
+    fclose(pFile);
 }
 
 // Integer to string implementation by Bazzy at
@@ -23,6 +29,13 @@ void Tools::log(string s) {
     ofs.open ("debug.log", ios::app);
     ofs << time(NULL) << ": " << s << endl;
     ofs.close();
+}
+
+void Tools::log(string format, int number) {
+    FILE * pFile;
+    pFile = fopen ("debug.log", "a+");
+    fprintf(pFile, ("%d: " + format).c_str(), (int)time(NULL), number);
+    fclose(pFile);
 }
 
 void Tools::println() {
@@ -43,4 +56,9 @@ vector<string> Tools::split(const string &str, char delimiter) {
         internal.push_back(tok);
     }
     return internal;
+}
+
+int Tools::rand_from_range(int min, int max) {
+    srand(time(NULL) ^ (getpid() << 16));
+    return rand() % (max - min + 1) + min;
 }

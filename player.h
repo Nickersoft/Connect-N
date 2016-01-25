@@ -1,33 +1,46 @@
 #ifndef __PLAYER_INCLUDED__
 #define __PLAYER_INCLUDED__
 
+#include <algorithm>
+#include <cmath>
 #include <iostream>
-#include <vector>
+#include <limits>
+#include <map>
 #include <sstream>
 #include <string>
+#include <vector>
 
-class Node;
+struct Move;
+class Board;
 
 #include "tools.h"
-#include "node.h"
+#include "board.h"
 
 using namespace std;
 
+typedef struct {
+    Board* board;
+    int value;
+} HeuristicNode;
+
 class Player {
 private:
+    Board*  board;
     bool    first_move;
-    Node*   gpTree;
     string  name;
     int     number;
     Player* opponent;
     int     time_limit;
 
+    HeuristicNode   minimax(Board*, int, int, int, Player*, Player*);
+    int             calc_heuristic(Board*);
 
 public:
     Player();
     Player(string, int);
 
     bool    getFirstMove();
+    Move    getMove();
     string  getName();
     int     getNumber();
     Player* getOpponent();

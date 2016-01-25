@@ -1,7 +1,7 @@
 ##Start of the Makefile
 
-connect-n: main.o player.o tools.o board.o node.o
-	g++ -g -o Connect-N main.o player.o tools.o board.o node.o
+connect-n: main.o player.o tools.o board.o
+	g++ -g -o Connect-N main.o player.o tools.o board.o
 
 main.o: main.cpp
 	g++ -g -Wall -c main.cpp
@@ -11,9 +11,6 @@ player.o: player.cpp player.h
 
 board.o: board.cpp board.h
 	g++ -g -Wall -c board.cpp
-
-node.o: node.cpp node.h
-	g++ -g -Wall -c node.cpp
 
 tools.o: tools.cpp tools.h
 	g++ -g -Wall -c tools.cpp

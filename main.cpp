@@ -15,7 +15,7 @@
 
 int main(int argc, const char * argv[]) {
     remove("debug.log");
-
+    remove("error.log");
     Player *p = new Player();
     cout << p->getName() << endl;
     while(true) {
@@ -25,10 +25,9 @@ int main(int argc, const char * argv[]) {
     // for (int i = 0; i < 100; i++)
     //     std::cout << rand() % 2;
     // Board* b1 = new Board(6, 7, 4);
-    // Board* b2 = new Board(*b1);
-    // b1->printBoard();
-    // b2->printBoard();
-    // b2->dropADiscFromTop(1, 1);
-    // b1->printBoard();
-    // b2->printBoard();
+    // b1->test1();
+    // b1->test2();
+    // b1->test3();
+    // b1->test4();
+    // b1->test5();
 }

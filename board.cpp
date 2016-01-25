@@ -17,7 +17,7 @@ bool Board::canRemoveADiscFromBottom(int col, int currentPlayer) {
 		error("Illegal column!");
 		return false;
 	}
-	else if (layout[height-1][col] != currentPlayer) {
+	else if (get(height - 1, col) != currentPlayer) {
 		error("You don't have a checker in column %d to pop out!\n", col);
 		return false;
 	}
@@ -46,17 +46,19 @@ bool Board::canDropADiscFromTop(int col, int currentPlayer) {
   * If winner=1, player1 wins; If winner=2, player2 wins.
 */
 
-int Board::checkDiagonally1() {
+map<int, int> Board::checkDiagonally1(int playerNumber) {
 	//check diagonally y = -x+k
-	int max1 = 0;
-	int max2 = 0;
-	bool player1_win = false;
-	bool player2_win = false;
+	int max = 0;
 	int upper_bound = height - 1 + width - 1 - (N - 1);
 
+	map<int, int> returnMap;
+
+	for (int i = 1; i <= N; i++) {
+		returnMap[i] = 0;
+	}
+
 	for(int k = N - 1; k <= upper_bound; k++) {
-		max1 = 0;
-		max2 = 0;
+		max = 0;
 		int x, y;
 		if (k < width)
 			x = k;
@@ -65,48 +67,37 @@ int Board::checkDiagonally1() {
 		y = -x+k;
 
 		while (x >= 0  && y < height) {
-			if (get(height - 1 - y, x) == PLAYER1) {
-				max1++;
-				max2 = 0;
-				if (max1 == N)
-					player1_win = true;
-			}
-			else if (get(height - 1 - y, x) == PLAYER2) {
-				max1 = 0;
-				max2++;
-				if (max2 == N)
-					player2_win = true;
+			if (get(height - 1 - y, x) == playerNumber) {
+				max++;
 			}
 			else {
-				max1 = 0;
-				max2 = 0;
+				if (max > 0 && max <= N) {
+					returnMap[max]++;
+				}
+				max = 0;
 			}
 			x--;
 			y++;
 		}
 	}
 
-	if (player1_win && player2_win)
-		return TIE;
-	if (player1_win)
-		return PLAYER1;
-	if (player2_win)
-		return PLAYER2;
-
-	return NOCONNECTION;
+	return returnMap;
 }
 
-int Board::checkDiagonally2() {
+map<int, int> Board::checkDiagonally2(int playerNumber) {
 	//check diagonally y = x-k
-	int max1 = 0;
-	int max2 = 0;
-	bool player1_win = false;
-	bool player2_win = false;
+	int max = 0;
 	int upper_bound = width - 1 - (N - 1);
 	int lower_bound = -(height - 1 - (N - 1));
+
+	map<int, int> returnMap;
+
+	for (int i = 1; i <= N; i++) {
+		returnMap[i] = 0;
+	}
+
 	for(int k = lower_bound; k <= upper_bound; k++) {
-		max1 = 0;
-		max2 = 0;
+		max = 0;
 		int x, y;
 		if(k >= 0)
 			x = k;
@@ -114,21 +105,14 @@ int Board::checkDiagonally2() {
 			x = 0;
 		y = x-k;
 		while(x >= 0 && x < width && y < height) {
-			if(get(height - 1 - y, x) == PLAYER1) {
-				max1++;
-				max2 = 0;
-				if(max1 == N)
-					player1_win = true;
-			}
-			else if(get(height - 1 - y, x) == PLAYER2) {
-				max1 = 0;
-				max2++;
-				if(max2 == N)
-					player2_win = true;
+			if(get(height - 1 - y, x) == playerNumber) {
+				max++;
 			}
 			else {
-				max1 = 0;
-				max2 = 0;
+				if (max > 0 && max <= N) {
+					returnMap[max]++;
+				}
+				max = 0;
 			}
 			x++;
 			y++;
@@ -136,93 +120,61 @@ int Board::checkDiagonally2() {
 
 	}	 //end for y = x-k
 
-	if (player1_win && player2_win)
-		return TIE;
-	if (player1_win)
-		return PLAYER1;
-	if (player2_win)
-	return PLAYER2;
-
-	return NOCONNECTION;
+	return returnMap;
 }
 
-int Board::checkHorizontally() {
-	int max1 = 0;
-	int max2 = 0;
-	bool player1_win = false;
-	bool player2_win = false;
+map<int, int> Board::checkHorizontally(int playerNumber) {
+	int max = 0;
+	map<int, int> returnMap;
+
+	for (int i = 1; i <= N; i++) {
+		returnMap[i] = 0;
+	}
 
 	//check each row, horizontally
 	for(int i = 0; i < this->height; i++) {
-		max1 = 0;
-		max2 = 0;
+		max = 0;
 		for(int j = 0;j < this->width; j++) {
-			if(get(i, j) == PLAYER1){
-				max1++;
-				max2 = 0;
-				if(max1 == N)
-					player1_win = true;
-			}
-			else if(get(i, j) == PLAYER2){
-				max1 = 0;
-				max2++;
-				if(max2 == N)
-					player2_win = true;
+			if(get(i, j) == playerNumber) {
+				max++;
 			}
 			else {
-				max1 = 0;
-				max2 = 0;
+				if (max > 0 && max <= N) {
+					returnMap[max]++;
+				}
+				max = 0;
 			}
 		}
 	}
 
-	if (player1_win && player2_win)
-		return TIE;
-	if (player1_win)
-		return PLAYER1;
-	if (player2_win)
-		return PLAYER2;
-
-	return NOCONNECTION;
+	return returnMap;
 }
 
-int Board::checkVertically(){
+map<int, int> Board::checkVertically(int playerNumber){
 	//check each column, vertically
-	int max1 = 0;
-	int max2 = 0;
-	bool player1_win = false;
-	bool player2_win = false;
+	int max = 0;
+	map<int, int> returnMap;
+
+	for (int i = 1; i <= N; i++) {
+		returnMap[i] = 0;
+	}
 
 	for(int j=0; j < this->width; j++) {
-		max1 = 0;
-		max2 = 0;
+		max = 0;
 		for(int i = 0; i < this->height; i++) {
-			if(get(i, j) == PLAYER1) {
-				max1++;
-				max2 = 0;
-				if(max1 == N)
-					player1_win = true;
+			if(get(i, j) == playerNumber) {
+				max++;
 			}
-			else if(get(i, j) == PLAYER2) {
-				max1 = 0;
-				max2++;
-				if(max2 == N)
-					player2_win = true;
-			}
-			else{
-				max1 = 0;
-				max2 = 0;
+			else {
+				if (max > 0 && max <= N) {
+					returnMap[max]++;
+				}
+				max = 0;
 			}
 		}
 	}
-	if (player1_win && player2_win)
-		return TIE;
-	if (player1_win)
-		return PLAYER1;
-	if (player2_win)
-		return PLAYER2;
 
-	return NOCONNECTION;
+	return returnMap;
 }
 
 void Board::dropADiscFromTop(int col, int currentplayer) {
@@ -276,7 +228,7 @@ Board::Board(int height, int width, int N) {
 
     this->popOutCount.resize(2);
     this->popOutCount[0] = 0;
-    this->popOutCount[1] = 1;
+    this->popOutCount[1] = 0;
 
 	for(int i = 0; i < height; i++) {
 		for(int j=0; j < width; j++){
@@ -287,29 +239,59 @@ Board::Board(int height, int width, int N) {
 	numOfDiscsInColumn.resize(width);
 }
 
-bool Board::makeMove(int column, int operation, Player *p) {
-    if (operation == DROP) {
-        if (this->canDropADiscFromTop(column, operation)) {
-			this->dropADiscFromTop(column, p->getNumber());
+Move Board::getLastPlayed() {
+	return this->lastPlayedMove;
+}
+
+bool Board::makeMove(Move m, Player *p) {
+	if (m.operation == DROP) {
+        if (this->canDropADiscFromTop(m.column, m.operation)) {
+			this->dropADiscFromTop(m.column, p->getNumber());
+			this->lastPlayedMove = m;
             return true;
 		}
         else
             return false;
     }
-	else if (operation== POPOUT) {
-        if ((this->canRemoveADiscFromBottom(column, p->getNumber())
+	else if (m.operation== POPOUT) {
+        if ((this->canRemoveADiscFromBottom(m.column, p->getNumber())
             && (popOutCount[p->getNumber() - 1] == 0))) {
-				this->removeADiscFromBottom(column);
+				this->removeADiscFromBottom(m.column);
 				popOutCount[p->getNumber() - 1] += 1;
+				this->lastPlayedMove = m;
 				return true;
 			}
     	else
-            return false;
+        	return false;
     }
     else {
         error("Wrong operation.");
         return false;
     }
+}
+
+int Board::getHeight() {
+	return this->height;
+}
+
+map<int, int> Board::getPlays(int playerNumber) {
+	map<int, int> returnMap;
+	map<int, int> player_h  = this->checkHorizontally(playerNumber);
+	map<int, int> player_v  = this->checkVertically(playerNumber);
+	map<int, int> player_d1 = this->checkDiagonally1(playerNumber);
+	map<int, int> player_d2 = this->checkDiagonally2(playerNumber);
+	for(int i = 1; i <= N; i++) {
+		returnMap[i] = player_h[i] + player_v[i] + player_d1[i] + player_d2[i];
+	}
+	return returnMap;
+}
+
+int Board::getWidth() {
+	return this->width;
+}
+
+int Board::getN() {
+	return this->N;
 }
 
 void Board::printBoard() {
@@ -321,7 +303,6 @@ void Board::printBoard() {
 		println();
 	}
 }
-
 
 void Board::printBoard(bool debug) {
 	string printString = "";
@@ -342,25 +323,26 @@ void Board::printBoard(bool debug) {
 	}
 }
 
-int Board::isConnectN(){
-	int tmp_winner = checkHorizontally();
+int Board::isConnectN() {
+	println("called");
+	int player1_horizontal 	= checkHorizontally(PLAYER1)[N];
+	int player1_vertical 	= checkVertically(PLAYER1)[N];
+	int player1_diagonal1 	= checkDiagonally1(PLAYER1)[N];
+	int player1_diagonal2 	= checkDiagonally2(PLAYER1)[N];
 
-	if(tmp_winner != NOCONNECTION)
-		return tmp_winner;
+	int player2_horizontal 	= checkHorizontally(PLAYER2)[N];
+	int player2_vertical 	= checkVertically(PLAYER2)[N];
+	int player2_diagonal1 	= checkDiagonally1(PLAYER2)[N];
+	int player2_diagonal2 	= checkDiagonally2(PLAYER2)[N];
 
-	tmp_winner = checkVertically();
-	if(tmp_winner != NOCONNECTION)
-		return tmp_winner;
+	int tmp_winner = NOCONNECTION;
 
-	tmp_winner = checkDiagonally1();
-	if(tmp_winner != NOCONNECTION)
-		return tmp_winner;
+	if(player1_horizontal || player1_vertical || player1_diagonal1 || player1_diagonal2)
+		tmp_winner = PLAYER1;
+	if (player2_horizontal || player2_vertical || player2_diagonal1 || player2_diagonal2)
+		tmp_winner = PLAYER2;
 
-	tmp_winner = checkDiagonally2();
-	if(tmp_winner != NOCONNECTION)
-		return tmp_winner;
-
-	return NOCONNECTION;
+	return tmp_winner;
 }
 
 bool Board::isFull() {
@@ -383,9 +365,9 @@ void Board::test1() {
 	 dropADiscFromTop(0, 1);
 	 dropADiscFromTop(2, 2);
 	 dropADiscFromTop(0, 1);
-	 printBoard();
-	 int tmp_winner= checkDiagonally1();
-	 printf("Winner: %d\n", tmp_winner);
+	 printBoard(true);
+	 int tmp_winner= isConnectN();
+	 log("Winner: %d\n", tmp_winner);
 }
 
 /**
@@ -395,26 +377,21 @@ void Board::test2(){
 	setBoard(1, 2, PLAYER1);
 	setBoard(2, 3, PLAYER1);
 	setBoard(3, 4, PLAYER1);
-	printBoard();
-	int tmp_winner= checkDiagonally1();
-	//int tmp_winner= isConnectN();
-	printf("Winner: %d\n", tmp_winner);
+	printBoard(true);
+	int tmp_winner = isConnectN();
+	log("Winner: %d\n", tmp_winner);
 }
 
 /**
 * test is connect N diagonally y=x-k
 * */
 void Board::test3(){
-	// setBoard(2, 5, PLAYER2);
-	// setBoard(4, 3, PLAYER2);
-	// setBoard(3, 4, PLAYER2);
 	setBoard(5, 4, PLAYER1);
 	setBoard(4, 5, PLAYER1);
 	setBoard(3, 6, PLAYER1);
-	printBoard();
-	int tmp_winner= checkDiagonally2();
-	//int tmp_winner= isConnectN();
-	printf("Winner: %d\n", tmp_winner);
+	printBoard(true);
+	int tmp_winner= isConnectN();
+	log("Winner: %d\n", tmp_winner);
 }
 
 /**
@@ -423,12 +400,10 @@ void Board::test3(){
 void Board::test4(){
 	setBoard(2, 0, PLAYER1);
 	setBoard(3, 1, PLAYER1);
-	// setBoard(4, 2, PLAYER1);
 	setBoard(5, 3, PLAYER1);
-	printBoard();
-	int tmp_winner= checkDiagonally1();
-	//int tmp_winner= isConnectN();
-	printf("Winner: %d\n", tmp_winner);
+	printBoard(true);
+	int tmp_winner= isConnectN();
+	log("Winner: %d\n", tmp_winner);
 }
 
 /**
@@ -438,19 +413,11 @@ void Board::test5(){
 	setBoard(2, 0, PLAYER1);
 	setBoard(3, 1, PLAYER1);
 	setBoard(4, 2, PLAYER1);
-	// setBoard(1, 4, PLAYER1);
-
-	// setBoard(3, 1, PLAYER1);
-	// setBoard(3, 2, PLAYER1);
-	// setBoard(3, 3, PLAYER1);
-	// setBoard(3, 4, PLAYER1);
-
 	setBoard(0, 3, PLAYER2);
 	setBoard(2, 5, PLAYER2);
 	setBoard(2, 3, PLAYER2);
 	setBoard(1, 4, PLAYER2);
-	printBoard();
-	// int tmp_winner= this->checkHorizontally();
-	int tmp_winner= this->checkDiagonally1();
-	printf("Winner: %d\n", tmp_winner);
+	printBoard(true);
+	int tmp_winner= this->isConnectN();
+	log("Winner: %d\n", tmp_winner);
 }
