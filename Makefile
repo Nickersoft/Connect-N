@@ -15,7 +15,7 @@ board.o: board.cpp board.h
 tools.o: tools.cpp tools.h
 	g++ -g -Wall -c tools.cpp
 
-run_sample:
+play_computer:
 	make clean && make
 	rm -f ./referee/*.class
 	cd ./referee && javac Referee.java Board.java
