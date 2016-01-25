@@ -81,4 +81,5 @@ $RECYCLE.BIN/
 *.app
 
 Connect-N
-
+debug.log
+error.log
