@@ -11,7 +11,7 @@ import java.util.*;
  *
  */
 
-public class Referee {
+public class Referee_User {
 
 	Board board;
 	int N=4;
@@ -46,7 +46,7 @@ public class Referee {
 //	BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 	
 	
-	public Referee( String command_to_execute_player1, String command_to_execute_player2, int board_height,int board_width, int N, int announceNameTimeLimit, 	int moveTimeLimit) throws IOException{
+	public Referee_User( String command_to_execute_player1, String command_to_execute_player2, int board_height,int board_width, int N, int announceNameTimeLimit, 	int moveTimeLimit) throws IOException{
 		 p1 = Runtime.getRuntime().exec(command_to_execute_player1);
 		 p2 = Runtime.getRuntime().exec(command_to_execute_player2);
 		 input1 = new BufferedReader(new InputStreamReader(p1.getInputStream()));
@@ -410,7 +410,7 @@ public class Referee {
 		int N=Integer.parseInt(arg[4]);
 		int announceNameTimeLimit =Integer.parseInt(arg[5]);
 		int moveTimeLimit=Integer.parseInt(arg[6]); 
-		Referee ref=new Referee( command_to_execute_player1, command_to_execute_player2, board_height, board_width,  N,  announceNameTimeLimit,  moveTimeLimit);
+		Referee_User ref=new Referee_User( command_to_execute_player1, command_to_execute_player2, board_height, board_width,  N,  announceNameTimeLimit,  moveTimeLimit);
 		
 // 		String command_to_execute_player1=arg[0];
 // 		String command_to_execute_player2=arg[1];

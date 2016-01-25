@@ -40,15 +40,23 @@ void Player::setOpponent(Player* o) {
 
 int Player::calc_heuristic(Board* b) {
 	int h;
-	map<int, int> myPlays = b->getPlays(this->getOpponent()->getNumber());
+	float constant;
+	map<int, int> myPlays = b->getPlays(this->getNumber());
 	map<int, int> opponentPlays = b->getPlays(this->getOpponent()->getNumber());
 
 	h = 0;
+	constant = 100 / b->getN();
+	// b->printBoard(true);
 
-	for(int a = 1; a <= b->getN(); a++) {
-		h += (pow(myPlays[a], a) - pow(opponentPlays[a], a));
+	for(int a = 2; a <= b->getN(); a++) {
+		log(itos(a) + ": " + itos(myPlays[a]) + ", " + itos(opponentPlays[a]));
+		int myWeight, opponentWeight;
+		myWeight = (constant*a)*pow(myPlays[a], a);
+		opponentWeight = (constant*a)*pow(opponentPlays[a], a);
+		h +=  myWeight - opponentWeight;
+		// log("(" + itos(constant*a) + " x " + itos(myPlays[a]) + "^" + itos(a) + ") - (" + itos(constant*a) + " x " + itos(opponentPlays[a]) + "^" + itos(a) + ")");
 	}
-
+	// log(itos(h));
 	return h;
 }
 
@@ -60,6 +68,10 @@ HeuristicNode Player::minimax(Board* board, int depth, int a, int b, Player* pla
 		returnNode.value = calc_heuristic(board);
 		return returnNode;
 	}
+
+	log("********************************");
+	log("DEPTH " + itos(depth));
+	log("********************************");
 
 	vector<Board*> children;
 
@@ -76,11 +88,8 @@ HeuristicNode Player::minimax(Board* board, int depth, int a, int b, Player* pla
 			children.push_back(b1);
 		}
 
-		if (b2->makeMove(m2, player)) {
-			// log("can play move " + itos(m2.column) + " " + itos(m2.operation));
-			// b2->printBoard(true);
+		if (b2->makeMove(m2, player))
 			children.push_back(b2);
-		}
     }
 
     if (player->getNumber() == maximizingPlayer->getNumber()) {
@@ -89,8 +98,14 @@ HeuristicNode Player::minimax(Board* board, int depth, int a, int b, Player* pla
 			Board* child = children.at(i);
 			HeuristicNode recurseMinimax = minimax(child, depth - 1, a, b, player->getOpponent(), maximizingPlayer);
 			returnNode.board = child;
-			if (recurseMinimax.value > returnNode.value)
+			returnNode.board->printBoard(true);
+			if ((recurseMinimax.value >= returnNode.value)) {
 				returnNode = recurseMinimax;
+				if (maximizingPlayer->getNumber()==PLAYER1) {
+						// log("Chose board for max at depth " + itos(depth) + " with heuristic " + itos(recurseMinimax.value) + ":");
+						// recurseMinimax.board->printBoard(true);
+				}
+			}
 			a = max(a, returnNode.value);
 			if (b <= a)
 				break;
@@ -101,8 +116,13 @@ HeuristicNode Player::minimax(Board* board, int depth, int a, int b, Player* pla
 			Board* child = children.at(i);
 			HeuristicNode recurseMinimax = minimax(child, depth - 1, a, b, player->getOpponent(), maximizingPlayer);
 			returnNode.board = child;
-			if (recurseMinimax.value < returnNode.value)
+			if ((recurseMinimax.value < returnNode.value)) {
 				returnNode = recurseMinimax;
+				if (maximizingPlayer->getNumber()==PLAYER1) {
+					// log("Chose board for min at depth " + itos(depth) + " with heuristic " + itos(recurseMinimax.value) + ":");
+					recurseMinimax.board->printBoard(true);
+				}
+			}
 			b = min(b, returnNode.value);
 			if (b <= a)
 				break;
@@ -119,7 +139,7 @@ Move Player::getMove() {
 	pos_inf = numeric_limits<int>::max();
 
 	HeuristicNode node = minimax(this->board, MAXDEPTH, neg_inf, pos_inf, this, this);
-
+	log("Chose heuristic " + itos(node.value));
 	Move m = node.board->getLastPlayed();
 
 	return m;
@@ -144,7 +164,7 @@ void Player::processInput() {
 			this->board->makeMove(nextMove, this);
 
 			cout << itos(nextMove.column) + " " + itos(nextMove.operation) << endl;
-			this->board->printBoard(true);
+			// this->board->printBoard(true);
 
 			log(this->getName() + " played move " + itos(nextMove.column) + " " + itos(nextMove.operation));
 			break;

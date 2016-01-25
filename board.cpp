@@ -71,9 +71,8 @@ map<int, int> Board::checkDiagonally1(int playerNumber) {
 				max++;
 			}
 			else {
-				if (max > 0 && max <= N) {
+				if (max > 0 && max <= N)
 					returnMap[max]++;
-				}
 				max = 0;
 			}
 			x--;
@@ -109,9 +108,8 @@ map<int, int> Board::checkDiagonally2(int playerNumber) {
 				max++;
 			}
 			else {
-				if (max > 0 && max <= N) {
+				if (max > 0 && max <= N)
 					returnMap[max]++;
-				}
 				max = 0;
 			}
 			x++;
@@ -137,11 +135,12 @@ map<int, int> Board::checkHorizontally(int playerNumber) {
 		for(int j = 0;j < this->width; j++) {
 			if(get(i, j) == playerNumber) {
 				max++;
+				if ((j == this->width - 1) && (j-max == emptyCell))
+					returnMap[max]++;
 			}
 			else {
-				if (max > 0 && max <= N) {
+				if (max > 0 && max <= N)
 					returnMap[max]++;
-				}
 				max = 0;
 			}
 		}
@@ -164,11 +163,12 @@ map<int, int> Board::checkVertically(int playerNumber){
 		for(int i = 0; i < this->height; i++) {
 			if(get(i, j) == playerNumber) {
 				max++;
+				if ((i == this->height - 1) && (i-max == emptyCell))
+					returnMap[max]++;
 			}
 			else {
-				if (max > 0 && max <= N) {
+				if (max > 0 && max <= N)
 					returnMap[max]++;
-				}
 				max = 0;
 			}
 		}
@@ -280,7 +280,22 @@ map<int, int> Board::getPlays(int playerNumber) {
 	map<int, int> player_v  = this->checkVertically(playerNumber);
 	map<int, int> player_d1 = this->checkDiagonally1(playerNumber);
 	map<int, int> player_d2 = this->checkDiagonally2(playerNumber);
-	for(int i = 1; i <= N; i++) {
+	// for(i = 1; i <= N; i++) {
+	// 	log(itos(playerNumber) + "h: " + itos(player_h[i]));
+	// }
+	// for(i = 1; i <= N; i++) {
+	// 	log(itos(playerNumber) + "v: " + itos(player_v[i]));
+	// }
+	// for(i = 1; i <= N; i++) {
+	// 	log(itos(playerNumber) + "d1: " + itos(player_d1[i]));
+	// }
+	//
+	// for(i = 1; i <= N; i++) {
+	// 	log(itos(playerNumber) + "d2: " + itos(player_d2[i]));
+	// }
+
+	returnMap[1] = player_h[1]; // this way single plays don't get counted more than once
+	for(int i = 2; i <= N; i++) {
 		returnMap[i] = player_h[i] + player_v[i] + player_d1[i] + player_d2[i];
 	}
 	return returnMap;
