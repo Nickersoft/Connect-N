@@ -8,6 +8,7 @@
 #include <map>
 #include <sstream>
 #include <string>
+#include <unistd.h>
 #include <vector>
 
 struct Move;

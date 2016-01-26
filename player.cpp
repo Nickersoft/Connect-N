@@ -94,7 +94,7 @@ HeuristicNode Player::minimax(Board* board, int depth, int a, int b, Player* pla
 
     if (player->getNumber() == maximizingPlayer->getNumber()) {
 		returnNode.value = numeric_limits<int>::min();
-		for(int i = 0; i < children.size(); i++) {
+		for(int i = 0; i < (int)children.size(); i++) {
 			Board* child = children.at(i);
 			HeuristicNode recurseMinimax = minimax(child, depth - 1, a, b, player->getOpponent(), maximizingPlayer);
 			returnNode.board = child;
@@ -112,7 +112,7 @@ HeuristicNode Player::minimax(Board* board, int depth, int a, int b, Player* pla
 		}
     } else {
 		returnNode.value = numeric_limits<int>::max();
-		for(int i = 0; i < children.size(); i++) {
+		for(int i = 0; i <(int)children.size(); i++) {
 			Board* child = children.at(i);
 			HeuristicNode recurseMinimax = minimax(child, depth - 1, a, b, player->getOpponent(), maximizingPlayer);
 			returnNode.board = child;

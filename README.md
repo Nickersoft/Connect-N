@@ -1,14 +1,44 @@
 # Connect-N
 
-Connect-N is a terminal-based game similar to Connect 4, with the exception of the there being a variable number of checkers that can be matched in a row. 
+Connect-N is a terminal-based game similar to Connect 4, with the exception of the there being a variable number of checkers that can be matched in a row.
 
 The game uses a Java-based referee to interact with the game, which can play against other users or against itself. It uses the Minimax algorithm with alpha-beta pruning to figure out the best moves to play against its opponent.
 
-## Prerequisites 
+## Prerequisites
 
 - [g++ Compiler](https://www.gnu.org/software/gcc/releases.html)
-- [The Java Runtime](https://www.java.com/en/download/) (any recent version)
+- [Java](https://www.java.com/en/download/) and the [Java SE Development Kit](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 - [GNU Make](https://www.gnu.org/software/make/)
+
+## Why C++ AND Java?
+
+This program was originally meant to be written in Java, however, an individual who originally collaborated with me on the project was more fluent in C, so C++ was chosen as a happy medium. That collaborator left the project shortly thereafter, now leaving us with this strange hybrid of C++ and Java code.
+
+## Setup For Windows
+
+Special instructions are required in order to run Connect-N on Windows. If you are using Linux or OS X, the prerequisites listed above can be installed using a package manager (`apt-get` on Linux or [Homebrew](http://brew.sh/)/[MacPorts](https://www.macports.org/) on OS X).
+
+However, if you do have Windows, you'll need [Cygwin](https://cygwin.com/install.html) to compile and run the game. Once you have downloaded the Cygwin installer package, run it and begin following the setup wizard. Eventually, you will be presented with a list of packages to install.
+
+Expand "Devel". Find and check the following three packages.
+
+1. gcc-core: GNU Compiler Collection (C, OpenMP) (v. 5.3.0-1)
+2. gcc-g++: GNU Compiler Collection (C++) (v. 5.3.0-1)
+3. make: The GNU version of the 'make utility' (v. 4.1-1)
+
+Clicking "Skip" will cycle through the installation options. If the package isn't currently installed, the only other options will be version numbers to install. If the package is installed, "Keep" and "Uninstall" will be among the other options. If a version number is displayed, it means that the package is marked for installation.
+
+**Important:** although the version numbers do not necessarily matter for this program (you should still try to shoot for the most recent versions), gcc-core and gcc-g++ *must* have the same version number, otherwise you will run into issues while compiling. As of January 25, 2016, the most recent version of gcc-core and gcc-g++ is 5.3.0-1.
+
+Once Cygwin is installed, open up the Cygwin terminal. Run the following command:
+
+	export PATH=$PATH:'<PATH-TO-JDK>'
+
+where PATH-TO-JDK is the directory of your JDK `bin` directory. This command allows Cygwin to access `javac`, which is required to compile the referee.
+
+*Note*: This is usually located at C:\Program Files\Java\jdk.x.x.x_xx\bin on most default installations, the x's representing version and build numbers.
+
+Now you can continue to compile and run the program as outlined below.  
 
 ## Running the Game
 
@@ -17,18 +47,18 @@ The game uses a Java-based referee to interact with the game, which can play aga
 It is extremely simple to use the game. If you wish to run the game against itself, simply `cd` into the source directory and run:
 
 	make play_computer
-	
+
 If you wish to play the game yourself, just run:
 
 	make play_user
-	
-### The (Not So) Hard Way	
-	
+
+### The (Not So) Hard Way
+
 If you wish to customize the game, you can run the original commands yourself:
 
-	make clean && make
+	make
 	java referee.Referee_User "./Connect-N" "./Connect-N" 6 7 3 10 10
-	
+
 where the last five arguments are as follows:
 
 1. Height of the board
@@ -41,8 +71,9 @@ The above command is for playing against the computer by yourself. If you wish t
 
 To use the original, untampered version of the referee (which plays the computer against itself), run:
 
-	make clean && make
-	java -jar ./referee/Referee.jar "./Connect-N" "./Connect-N" 6 7 3 10 10	
+	make
+	java -jar ./referee/Referee.jar "./Connect-N" "./Connect-N" 6 7 3 10 10
+
 ## Debugging
 
-The source directory comes with a nifty Tools class, which can be used for debugging purposes. Two noticeable functions are `log()` and `error()`, which write to `debug.log` and `error.log`, respectively. Both functions can also take in an extra integer parameter (in addition to a string), which will format the string using the integer provided (like printf). 
+The source directory comes with a nifty Tools class, which can be used for debugging purposes. Two noticeable functions are `log()` and `error()`, which write to `debug.log` and `error.log`, respectively. Both functions can also take in an extra integer parameter (in addition to a string), which will format the string using the integer provided (like printf).
