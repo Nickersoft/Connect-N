@@ -1,20 +1,24 @@
-# Connect-N
+Connect-N
+=========
 
 Connect-N is a terminal-based game similar to Connect 4, with the exception of the there being a variable number of checkers that can be matched in a row.
 
 The game uses a Java-based referee to interact with the game, which can play against other users or against itself. It uses the Minimax algorithm with alpha-beta pruning to figure out the best moves to play against its opponent.
 
-## Prerequisites
+Prerequisites
+-------------
 
 - [g++ Compiler](https://www.gnu.org/software/gcc/releases.html)
 - [Java](https://www.java.com/en/download/) and the [Java SE Development Kit](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 - [GNU Make](https://www.gnu.org/software/make/)
 
-## Why C++ AND Java?
+Why C++ AND Java?
+-----------------
 
 This program was originally meant to be written in Java, however, an individual who originally collaborated with me on the project was more fluent in C, so C++ was chosen as a happy medium. That collaborator left the project shortly thereafter, now leaving us with this strange hybrid of C++ and Java code.
 
-## Setup For Windows
+Setup For Windows
+-----------------
 
 Special instructions are required in order to run Connect-N on Windows. If you are using Linux or OS X, the prerequisites listed above can be installed using a package manager (`apt-get` on Linux or [Homebrew](http://brew.sh/)/[MacPorts](https://www.macports.org/) on OS X).
 
@@ -40,7 +44,8 @@ where PATH-TO-JDK is the directory of your JDK `bin` directory. This command all
 
 Now you can continue to compile and run the program as outlined below.  
 
-## Running the Game
+Running the Game
+----------------
 
 ### The Easy Way
 
@@ -51,6 +56,12 @@ It is extremely simple to use the game. If you wish to run the game against itse
 If you wish to play the game yourself, just run:
 
 	make play_user
+
+Keep in mind that while playing the game on your own, you must input your moves in the following format:
+
+	<column> <operation>
+
+where the columns are zero-based (i.e. the first column is 0, the second is 1, etc.) and the operations that can be performed are either 1 (drop), which drops a checker in the column from the top, or 0 (pop out), which pops a checker out from the bottom of the given column. Please note that you can only play 1 pop out move per game.
 
 ### The (Not So) Hard Way
 
@@ -74,6 +85,7 @@ To use the original, untampered version of the referee (which plays the computer
 	make
 	java -jar ./referee/Referee.jar "./Connect-N" "./Connect-N" 6 7 3 10 10
 
-## Debugging
+Debugging
+---------
 
 The source directory comes with a nifty Tools class, which can be used for debugging purposes. Two noticeable functions are `log()` and `error()`, which write to `debug.log` and `error.log`, respectively. Both functions can also take in an extra integer parameter (in addition to a string), which will format the string using the integer provided (like printf).
