@@ -1,5 +1,5 @@
-Testing Different Heuristics
-============================
+Running An Empirical Valuation
+==============================
 
 How The Heuristic Works
 -----------------------
