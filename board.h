@@ -2,7 +2,7 @@
 #define __BOARD_INCLUDED__
 
 #define emptyCell 9
-#define MAXDEPTH 5
+#define MAXDEPTH 3
 #define PLAYER1 1
 #define PLAYER2 2
 #define NOCONNECTION -1

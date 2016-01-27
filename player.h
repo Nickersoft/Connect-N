@@ -1,7 +1,7 @@
 #ifndef __PLAYER_INCLUDED__
 #define __PLAYER_INCLUDED__
 
-#define DEBUG 1
+#define DEBUG 0
 
 #include <algorithm>
 #include <cmath>

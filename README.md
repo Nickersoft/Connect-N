@@ -85,7 +85,17 @@ To use the original, untampered version of the referee (which plays the computer
 	make
 	java -jar ./referee/Referee.jar "./Connect-N" "./Connect-N" 6 7 3 10 10
 
+Empirical Valuation
+-------------------
+
+An empirical valuation was performed on this game in order to test the significance of the heuristic function. For more info, click [here](EXPERIMENT.md).
+
 Debugging
 ---------
 
 The source directory comes with a nifty Tools class, which can be used for debugging purposes. Two noticeable functions are `log()` and `error()`, which write to `debug.log` and `error.log`, respectively. Both functions can also take in an extra integer parameter (in addition to a string), which will format the string using the integer provided (like printf).
+
+Known limitations
+-----------------
+
+Due to time constraints, this implementation of Connect-N is not perfect. Connect-N does not go out of its way to avoid timeouts. Implementing such a feature involves multithreading in C++ and the raw handling of shared memory, which could not be achieved by this project's deadline. As a result, timeouts must be avoid by manually changing the MAXDEPTH constant found in board.h.
