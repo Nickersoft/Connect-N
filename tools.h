@@ -22,8 +22,8 @@ namespace Tools {
     void            log(string, int);
     void            println();
     void            println(string);
-    vector<string>  split(const string&, char);
     int             rand_from_range(int, int);
+    vector<string>  split(const string&, char);
 };
 
 #endif

@@ -1,6 +1,8 @@
 #ifndef __PLAYER_INCLUDED__
 #define __PLAYER_INCLUDED__
 
+#define DEBUG 1
+
 #include <algorithm>
 #include <cmath>
 #include <iostream>
@@ -20,7 +22,7 @@ class Board;
 using namespace std;
 
 typedef struct {
-    Board* board;
+    Move move;
     int value;
 } HeuristicNode;
 
@@ -33,8 +35,8 @@ private:
     Player* opponent;
     int     time_limit;
 
-    HeuristicNode   minimax(Board*, int, int, int, Player*, Player*);
-    int             calc_heuristic(Board*);
+    HeuristicNode   minimax(Board*, int, int, int, Player*, Player*, bool);
+    int             calcHeuristic(Board*);
 
 public:
     Player();

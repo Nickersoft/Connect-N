@@ -1,16 +1,89 @@
 #include "board.h"
 
-/*********************
-   PRIVATE FUNCTIONS
-**********************/
+/**************************************************
+
+	ABOUT THIS CODE
+	---------------
+
+	This code was converted from Board.java,
+	with minor modifications. The modified
+	functions contain signatures to explain
+	their new purposes (getters/setters excluded)
+	All other methods have remained intact.
+
+/**************************************************
+
+/******************
+	CONSTRUCTORS
+*******************/
+
+Board::Board(const Board &obj) {
+    this->width = obj.width;
+    this->height = obj.height;
+    this->N = obj.N;
+    this->layout = obj.layout;
+    this->numOfDiscsInColumn = obj.numOfDiscsInColumn;
+    this->popOutCount = obj.popOutCount;
+}
+
+Board::Board(int height, int width, int N) {
+	this->width  = width;
+	this->height = height;
+	this->N = N;
+    this->layout = resizeLayout(layout, height, width);
+
+    this->popOutCount.resize(2);
+    this->popOutCount[0] = 0;
+    this->popOutCount[1] = 0;
+
+	for(int i = 0; i < height; i++) {
+		for(int j=0; j < width; j++){
+			set(i, j, emptyCell);
+		}
+    }
+
+	numOfDiscsInColumn.resize(width);
+}
+
+/**********************
+   GETTERS & SETTERS
+***********************/
 
 int Board::get(int x, int y) {
 	return layout.at(x).at(y);
 }
 
+Move Board::getLastPlayed() {
+	return this->lastPlayedMove;
+}
+
+int Board::getN() {
+	return this->N;
+}
+
+int Board::getHeight() {
+	return this->height;
+}
+
+int Board::getWidth() {
+	return this->width;
+}
+
 void Board::set(int row, int col, int new_value) {
 	layout.at(row).at(col) = new_value;
 }
+
+void Board::setBoard(int row, int col, int player) {
+	if(row >= height || col >= width)
+		error("The row or column number is out of bound!");
+	if(player != PLAYER1 && player != PLAYER2)
+		error("Wrong player!");
+	set(row, col, player);
+}
+
+/***********************
+   ORIGINAL FUNCTIONS
+************************/
 
 bool Board::canRemoveADiscFromBottom(int col, int currentPlayer) {
 	if (col < 0 || col >= width) {
@@ -40,12 +113,54 @@ bool Board::canDropADiscFromTop(int col, int currentPlayer) {
 	}
 }
 
-/**
-  * Check if one of the players gets N checkers in a row (horizontally, vertically or diagonally)
-  * @return the value of winner. If winner=-1, nobody win and game continues; If winner=0/TIE, it's a tie;
-  * If winner=1, player1 wins; If winner=2, player2 wins.
-*/
+void Board::dropADiscFromTop(int col, int currentplayer) {
+	int firstEmptyCellRow = height - numOfDiscsInColumn.at(col) - 1;
+	set(firstEmptyCellRow, col, currentplayer);
+	numOfDiscsInColumn.at(col) += 1;
+}
 
+bool Board::isFull() {
+	for(int i = 0; i < height; i++)
+		for(int j = 0; j < width; j++) {
+			if(get(i, j) == emptyCell)
+				return false;
+		}
+	return true;
+}
+
+void Board::printBoard() {
+	println("Board: ");
+	for(int i = 0; i < height; i++) {
+		for(int j = 0; j < width; j++) {
+			printf("%d ", get(i, j));
+		}
+		println();
+	}
+}
+
+void Board::removeADiscFromBottom(int col) {
+	int i;
+	for(i = height - 1; i > height - numOfDiscsInColumn.at(col); i--) {
+		set(i, col, get(i-1, col));
+	}
+	set(i, col, emptyCell);
+	numOfDiscsInColumn.at(col) -= 1;
+}
+
+/**************************
+   NEW/REVISED FUNCTIONS
+***************************/
+
+/*
+ * Name: checkDiagonally1(int)
+ * Type: private method
+ * Description: Counts the number of times a player matches checkers from 1 to N diagonally in a valid play
+ * Parameters:
+ * 	- playerNumber: The number of the player whose moves to check for
+ * Returns: An integer map mapping the number of checkers matched to the number of times those matches occur
+ * 	- Example: [1: 3, 2: 4, 3: 0] such that the player matched one checker three times, two checkers four times, and
+ * 	  three-checkers zero times
+ */
 map<int, int> Board::checkDiagonally1(int playerNumber) {
 	//check diagonally y = -x+k
 	int max = 0;
@@ -69,9 +184,11 @@ map<int, int> Board::checkDiagonally1(int playerNumber) {
 		while (x >= 0  && y < height) {
 			if (get(height - 1 - y, x) == playerNumber) {
 				max++;
+				if (y == (height - 1))
+					returnMap[max]++;
 			}
 			else {
-				if (max > 0 && max <= N)
+				if ((max > 0 && max <= N) && (get(height - 1 - y, x) == emptyCell))
 					returnMap[max]++;
 				max = 0;
 			}
@@ -83,6 +200,16 @@ map<int, int> Board::checkDiagonally1(int playerNumber) {
 	return returnMap;
 }
 
+/*
+ * Name: checkDiagonally2(int)
+ * Type: private method
+ * Description: Counts the number of times a player matches checkers from 1 to N diagonally in a valid play
+ * Parameters:
+ * 	- playerNumber: The number of the player whose moves to check for
+ * Returns: An integer map mapping the number of checkers matched to the number of times those matches occur
+ * 	- Example: [1: 3, 2: 4, 3: 0] such that the player matched one checker three times, two checkers four times, and
+ * 	  three-checkers zero times
+ */
 map<int, int> Board::checkDiagonally2(int playerNumber) {
 	//check diagonally y = x-k
 	int max = 0;
@@ -106,9 +233,11 @@ map<int, int> Board::checkDiagonally2(int playerNumber) {
 		while(x >= 0 && x < width && y < height) {
 			if(get(height - 1 - y, x) == playerNumber) {
 				max++;
+				if (y == (height - 1) || (x == width - 1))
+					returnMap[max]++;
 			}
 			else {
-				if (max > 0 && max <= N)
+				if ((max > 0 && max <= N) && (get(height - 1 - y, x) == emptyCell))
 					returnMap[max]++;
 				max = 0;
 			}
@@ -121,6 +250,16 @@ map<int, int> Board::checkDiagonally2(int playerNumber) {
 	return returnMap;
 }
 
+/*
+ * Name: checkHorizontally(int)
+ * Description: Counts the number of times a player matches checkers from 1 to N horizontally in a valid play
+ * Type: private method
+ * Parameters:
+ * 	- playerNumber: The number of the player whose moves to check for
+ * Returns: An integer map mapping the number of checkers matched to the number of times those matches occur
+ * 	- Example: [1: 3, 2: 4, 3: 0] such that the player matched one checker three times, two checkers four times, and
+ * 	  three-checkers zero times
+ */
 map<int, int> Board::checkHorizontally(int playerNumber) {
 	int max = 0;
 	map<int, int> returnMap;
@@ -135,11 +274,11 @@ map<int, int> Board::checkHorizontally(int playerNumber) {
 		for(int j = 0;j < this->width; j++) {
 			if(get(i, j) == playerNumber) {
 				max++;
-				if ((j == this->width - 1) && (j-max == emptyCell))
+				if (j == this->width - 1)
 					returnMap[max]++;
 			}
 			else {
-				if (max > 0 && max <= N)
+				if ((max > 0 && max <= N) && (get(i, j) == emptyCell))
 					returnMap[max]++;
 				max = 0;
 			}
@@ -149,7 +288,17 @@ map<int, int> Board::checkHorizontally(int playerNumber) {
 	return returnMap;
 }
 
-map<int, int> Board::checkVertically(int playerNumber){
+/*
+ * Name: checkVertically(int)
+ * Type: private method
+ * Description: Counts the number of times a player matches checkers from 1 to N vertically in a valid play
+ * Parameters:
+ * 	- playerNumber: The number of the player whose moves to check for
+ * Returns: An integer map mapping the number of checkers matched to the number of times those matches occur
+ * 	- Example: [1: 3, 2: 4, 3: 0] such that the player matched one checker three times, two checkers four times, and
+ * 	  three-checkers zero times
+ */
+map<int, int> Board::checkVertically(int playerNumber) {
 	//check each column, vertically
 	int max = 0;
 	map<int, int> returnMap;
@@ -163,11 +312,11 @@ map<int, int> Board::checkVertically(int playerNumber){
 		for(int i = 0; i < this->height; i++) {
 			if(get(i, j) == playerNumber) {
 				max++;
-				if ((i == this->height - 1) && (i-max == emptyCell))
+				if (i == this->height - 1)
 					returnMap[max]++;
 			}
 			else {
-				if (max > 0 && max <= N)
+				if ((max > 0 && max <= N) && (get(i, j) == emptyCell))
 					returnMap[max]++;
 				max = 0;
 			}
@@ -177,72 +326,72 @@ map<int, int> Board::checkVertically(int playerNumber){
 	return returnMap;
 }
 
-void Board::dropADiscFromTop(int col, int currentplayer) {
-	int firstEmptyCellRow = height - numOfDiscsInColumn.at(col) - 1;
-	set(firstEmptyCellRow, col, currentplayer);
-	numOfDiscsInColumn.at(col) += 1;
-}
+/*
+ * Name: getPlays(int)
+ * Type: public method
+ * Description: Counts the total number of times a player matches checkers from 1 to N (merges all counts from
+ * horizontal, vertical, and diagonal checks)
+ * Parameters:
+ * 	- playerNumber: The number of the player whose moves to check for
+ * Returns: An integer map mapping the number of checkers matched to the number of times those matches occur
+ * 	- Example: [1: 3, 2: 4, 3: 0] such that the player matched one checker three times, two checkers four times, and
+ * 	  three-checkers zero times
+ */
+map<int, int> Board::getPlays(int playerNumber) {
+	map<int, int> returnMap;
+	map<int, int> player_h  = this->checkHorizontally(playerNumber);
+	map<int, int> player_v  = this->checkVertically(playerNumber);
+	map<int, int> player_d1 = this->checkDiagonally1(playerNumber);
+	map<int, int> player_d2 = this->checkDiagonally2(playerNumber);
 
-void Board::removeADiscFromBottom(int col) {
-	int i;
-	for(i = height - 1; i > height - numOfDiscsInColumn.at(col); i--) {
-		set(i, col, get(i-1, col));
+	for(int i = 1; i <= N; i++) {
+		returnMap[i] = player_h[i] + player_v[i] + player_d1[i] + player_d2[i];
 	}
-	set(i, col, emptyCell);
-	numOfDiscsInColumn.at(col) -= 1;
+	return returnMap;
 }
 
-vector< vector<int> > Board::resize_layout(vector< vector<int> > layout, int new_height, int new_width) {
-    layout.resize(new_height);
-    for (int i = 0; i < new_height; ++i)
-        layout[i].resize(new_width);
-    return layout;
+/*
+ * Name: isConnectN()
+ * Type: public method
+ * Description: Checks for a winner by examining all N-matched moves made by both players
+ * Parameters: None
+ * Returns:
+ * - If there is a winner: The player number of the winner
+ * - If there is a tie: TIE flag
+ * - If there is no winner: NOCONNECTION flag
+ */
+int Board::isConnectN() {
+	int player1_horizontal 	= checkHorizontally(PLAYER1)[N];
+	int player1_vertical 	= checkVertically(PLAYER1)[N];
+	int player1_diagonal1 	= checkDiagonally1(PLAYER1)[N];
+	int player1_diagonal2 	= checkDiagonally2(PLAYER1)[N];
+
+	int player2_horizontal 	= checkHorizontally(PLAYER2)[N];
+	int player2_vertical 	= checkVertically(PLAYER2)[N];
+	int player2_diagonal1 	= checkDiagonally1(PLAYER2)[N];
+	int player2_diagonal2 	= checkDiagonally2(PLAYER2)[N];
+
+	int tmp_winner = NOCONNECTION;
+
+	if(player1_horizontal || player1_vertical || player1_diagonal1 || player1_diagonal2)
+		tmp_winner = PLAYER1;
+	if (player2_horizontal || player2_vertical || player2_diagonal1 || player2_diagonal2)
+		tmp_winner = PLAYER2;
+
+	// TODO: consider ties
+
+	return tmp_winner;
 }
 
-void Board::setBoard(int row, int col, int player) {
-	if(row >= height || col >= width)
-		error("The row or column number is out of bound!");
-	if(player != PLAYER1 && player != PLAYER2)
-		error("Wrong player!");
-	set(row, col, player);
-}
-
-/********************
-   PUBLIC FUNCTIONS
-*********************/
-
-Board::Board(const Board &obj) {
-    this->width = obj.width;
-    this->height = obj.height;
-    this->N = obj.N;
-    this->layout = obj.layout;
-    this->numOfDiscsInColumn = obj.numOfDiscsInColumn;
-    this->popOutCount = obj.popOutCount;
-}
-
-Board::Board(int height, int width, int N) {
-	this->width  = width;
-	this->height = height;
-	this->N = N;
-    this->layout = resize_layout(layout, height, width);
-
-    this->popOutCount.resize(2);
-    this->popOutCount[0] = 0;
-    this->popOutCount[1] = 0;
-
-	for(int i = 0; i < height; i++) {
-		for(int j=0; j < width; j++){
-			set(i, j, emptyCell);
-		}
-    }
-
-	numOfDiscsInColumn.resize(width);
-}
-
-Move Board::getLastPlayed() {
-	return this->lastPlayedMove;
-}
-
+/*
+ * Name: makeMove(Move, Player*)
+ * Type: public method
+ * Description: Makes a move on the board
+ * Parameters:
+ * 	- m: A move containing a column and an operation
+ * 	- p: The player making the move
+ * Returns: A boolean denoting whether the move was made successfully
+ */
 bool Board::makeMove(Move m, Player *p) {
 	if (m.operation == DROP) {
         if (this->canDropADiscFromTop(m.column, m.operation)) {
@@ -270,55 +419,14 @@ bool Board::makeMove(Move m, Player *p) {
     }
 }
 
-int Board::getHeight() {
-	return this->height;
-}
-
-map<int, int> Board::getPlays(int playerNumber) {
-	map<int, int> returnMap;
-	map<int, int> player_h  = this->checkHorizontally(playerNumber);
-	map<int, int> player_v  = this->checkVertically(playerNumber);
-	map<int, int> player_d1 = this->checkDiagonally1(playerNumber);
-	map<int, int> player_d2 = this->checkDiagonally2(playerNumber);
-	// for(i = 1; i <= N; i++) {
-	// 	log(itos(playerNumber) + "h: " + itos(player_h[i]));
-	// }
-	// for(i = 1; i <= N; i++) {
-	// 	log(itos(playerNumber) + "v: " + itos(player_v[i]));
-	// }
-	// for(i = 1; i <= N; i++) {
-	// 	log(itos(playerNumber) + "d1: " + itos(player_d1[i]));
-	// }
-	//
-	// for(i = 1; i <= N; i++) {
-	// 	log(itos(playerNumber) + "d2: " + itos(player_d2[i]));
-	// }
-
-	returnMap[1] = player_h[1]; // this way single plays don't get counted more than once
-	for(int i = 2; i <= N; i++) {
-		returnMap[i] = player_h[i] + player_v[i] + player_d1[i] + player_d2[i];
-	}
-	return returnMap;
-}
-
-int Board::getWidth() {
-	return this->width;
-}
-
-int Board::getN() {
-	return this->N;
-}
-
-void Board::printBoard() {
-	println("Board: ");
-	for(int i = 0; i < height; i++) {
-		for(int j = 0; j < width; j++) {
-			printf("%d ", get(i, j));
-		}
-		println();
-	}
-}
-
+/*
+ * Name: printBoard(bool)
+ * Type: public method
+ * Description: Just like printBoard(), but can write to a debug log if debug is set to true
+ * Parameters:
+ * 	- debug: Denotes whether the board should write to the debug log or to console output
+ * Returns: None
+ */
 void Board::printBoard(bool debug) {
 	string printString = "";
 	if (debug) {
@@ -338,36 +446,26 @@ void Board::printBoard(bool debug) {
 	}
 }
 
-int Board::isConnectN() {
-	println("called");
-	int player1_horizontal 	= checkHorizontally(PLAYER1)[N];
-	int player1_vertical 	= checkVertically(PLAYER1)[N];
-	int player1_diagonal1 	= checkDiagonally1(PLAYER1)[N];
-	int player1_diagonal2 	= checkDiagonally2(PLAYER1)[N];
-
-	int player2_horizontal 	= checkHorizontally(PLAYER2)[N];
-	int player2_vertical 	= checkVertically(PLAYER2)[N];
-	int player2_diagonal1 	= checkDiagonally1(PLAYER2)[N];
-	int player2_diagonal2 	= checkDiagonally2(PLAYER2)[N];
-
-	int tmp_winner = NOCONNECTION;
-
-	if(player1_horizontal || player1_vertical || player1_diagonal1 || player1_diagonal2)
-		tmp_winner = PLAYER1;
-	if (player2_horizontal || player2_vertical || player2_diagonal1 || player2_diagonal2)
-		tmp_winner = PLAYER2;
-
-	return tmp_winner;
+/*
+ * Name: resizeLayout(vector<vector<int>>, int, int)
+ * Type: private method
+ * Description: Resizes the board's layout vector to a new height and width
+ * Parameters:
+ * 	- layout: Layout vector to resize
+ *	- new_height: The new height
+ *	- new_width: The new width
+ * Returns: A new layout vector
+ */
+vector< vector<int> > Board::resizeLayout(vector< vector<int> > layout, int new_height, int new_width) {
+    layout.resize(new_height);
+    for (int i = 0; i < new_height; ++i)
+        layout[i].resize(new_width);
+    return layout;
 }
 
-bool Board::isFull() {
-	for(int i = 0; i < height; i++)
-		for(int j = 0; j < width; j++) {
-			if(get(i, j) == emptyCell)
-				return false;
-		}
-	return true;
-}
+/****************************
+   ORIGINAL TEST FUNCTIONS
+*****************************/
 
 /**
  * test is connect N diagonally y=-x+k

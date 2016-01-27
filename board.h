@@ -2,7 +2,7 @@
 #define __BOARD_INCLUDED__
 
 #define emptyCell 9
-#define MAXDEPTH 1
+#define MAXDEPTH 5
 #define PLAYER1 1
 #define PLAYER2 2
 #define NOCONNECTION -1
@@ -16,16 +16,16 @@
 
 class Player;
 
+struct Move {
+    int column;
+    int operation;
+};
+
 #include "player.h"
 #include "tools.h"
 
 using namespace std;
 using namespace Tools;
-
-struct Move {
-    int column;
-    int operation;
-};
 
 class Board {
 
@@ -50,7 +50,7 @@ private:
     map<int, int>           checkVertically(int);
     void                    dropADiscFromTop(int, int);
     void                    removeADiscFromBottom(int);
-    vector< vector<int> >   resize_layout(vector< vector<int> >, int, int);
+    vector< vector<int> >   resizeLayout(vector< vector<int> >, int, int);
     void                    setBoard(int row, int col, int);
 
 public:

@@ -102,9 +102,11 @@ public class Referee_User {
 		while(winner==-1){			
 			countDown(this.moveTimeLimit);
 			
-			if(this.currentPlayer==this.player1)
-			    s=input1.readLine();
-			else
+            if(this.currentPlayer==this.player1) {
+                Scanner scanner = new Scanner(System.in);
+                s = scanner.nextLine();
+                System.out.println(s);
+            } else
 				s=input2.readLine();
 			
 			this.autoTimer.cancel();
