@@ -1,7 +1,7 @@
 Connect-N
 =========
 
-Connect-N is a terminal-based game similar to Connect 4, with the exception of the there being a variable number of checkers that can be matched in a row.
+Connect-N is a terminal-based game similar to Connect 4, with the exception of there being a variable number of checkers that can be matched in a row instead of just four.
 
 The game uses a Java-based referee to interact with the game, which can play against other users or against itself. It uses the Minimax algorithm with alpha-beta pruning to figure out the best moves to play against its opponent.
 
